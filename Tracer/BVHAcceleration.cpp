@@ -2,20 +2,20 @@
 
 
 
-BVHAcceleration::BVHAcceleration()
+TBVHAcceleration::TBVHAcceleration()
 {
 }
 
 
-BVHAcceleration::~BVHAcceleration()
+TBVHAcceleration::~TBVHAcceleration()
 {
 	delete m_Scene;
 }
 
-void BVHAcceleration::createTree(const std::vector<Object*>& a_Objects)
+void TBVHAcceleration::createTree(const std::vector<TObject*>& a_Objects)
 {
 	if (m_Scene == NULL) {
-		m_Scene = new BVHNode(a_Objects);
+		m_Scene = new TBVHNode(a_Objects);
 	}
 	else {
 		//This would be weird if this would be called
@@ -23,7 +23,7 @@ void BVHAcceleration::createTree(const std::vector<Object*>& a_Objects)
 	}
 }
 
-bool BVHAcceleration::Intersect(Ray & a_Ray)
+bool TBVHAcceleration::Intersect(TRay& a_Ray)
 {
 	return m_Scene->Intersect(a_Ray);
 }

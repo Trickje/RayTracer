@@ -7,7 +7,8 @@
 #include <random>
 #include <time.h>
 #include <chrono>
-Sphere::Sphere() {
+
+TSphere::TSphere() {
 	//Predefined bounds:
 	std::mt19937 generator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
 	std::uniform_int_distribution<unsigned int> dist(1, 100);
@@ -58,11 +59,11 @@ Sphere::Sphere() {
 	int randomB = dist(generator);
 	this->m_Reflectiveness = 0.f;
 	this->m_RefractionIndex = 0.f;
-	m_Color = Color(static_cast<float>(randomR), static_cast<float>(randomG), static_cast<float>(randomB));
+	m_Color = TColor(static_cast<float>(randomR), static_cast<float>(randomG), static_cast<float>(randomB));
 	m_Color.KeepItReal();
 }
 
-Sphere::Sphere(const float& a_X, const float& a_Y, const float& a_Z, const float& a_Radius, const Color& a_Color) {
+TSphere::TSphere(const float& a_X, const float& a_Y, const float& a_Z, const float& a_Radius, const TColor& a_Color) {
 	this->m_Position.m_X = a_X;
 	this->m_Position.m_Y = a_Y;
 	this->m_Position.m_Z = a_Z;
@@ -71,7 +72,7 @@ Sphere::Sphere(const float& a_X, const float& a_Y, const float& a_Z, const float
 	this->m_Reflectiveness = 0.f;
 }
 
-Sphere::Sphere(const vec3& a_Coords, const float& a_Radius, const Color& a_Color) {
+TSphere::TSphere(const vec3& a_Coords, const float& a_Radius, const TColor& a_Color) {
 	this->m_Position.m_X = a_Coords.m_X;
 	this->m_Position.m_Y = a_Coords.m_Y;
 	this->m_Position.m_Z = a_Coords.m_Z;
@@ -80,7 +81,7 @@ Sphere::Sphere(const vec3& a_Coords, const float& a_Radius, const Color& a_Color
 	this->m_Reflectiveness = 0.f;
 }
 
-Sphere::Sphere(const vec3& a_Coords, const float& a_Radius, const Color& a_Color, const float& a_Reflectiveness)
+TSphere::TSphere(const vec3& a_Coords, const float& a_Radius, const TColor& a_Color, const float& a_Reflectiveness)
 {
 	this->m_Position.m_X = a_Coords.m_X;
 	this->m_Position.m_Y = a_Coords.m_Y;
@@ -90,7 +91,7 @@ Sphere::Sphere(const vec3& a_Coords, const float& a_Radius, const Color& a_Color
 	this->m_Reflectiveness = a_Reflectiveness;
 }
 
-Sphere::Sphere(const vec3& a_Coords, const float& a_Radius, const int& a_MaterialType)
+TSphere::TSphere(const vec3& a_Coords, const float& a_Radius, const int& a_MaterialType)
 {
 	this->m_Position.m_X = a_Coords.m_X;
 	this->m_Position.m_Y = a_Coords.m_Y;
@@ -107,11 +108,11 @@ Sphere::Sphere(const vec3& a_Coords, const float& a_Radius, const int& a_Materia
 	}
 }
 
-Sphere::~Sphere() {
+TSphere::~TSphere() {
 
 }
 
-bool Sphere::Collides(const vec3& a_Origin, const vec3& a_Direction, float& a_IntersectPoint) {
+bool TSphere::Collides(const vec3& a_Origin, const vec3& a_Direction, float& a_IntersectPoint) {
 
 	//l = the distance between the camera and the sphere center
 	vec3 l = a_Origin - m_Position;
@@ -141,21 +142,21 @@ bool Sphere::Collides(const vec3& a_Origin, const vec3& a_Direction, float& a_In
 	return false;
 }
 
-sf::Color Sphere::getSFColor() const
+sf::Color TSphere::getSFColor() const
 {
 	return sf::Color(static_cast<sf::Uint8>(m_Color.m_R), static_cast<sf::Uint8>(m_Color.m_G), static_cast<sf::Uint8>(m_Color.m_B), static_cast<sf::Uint8>(m_Color.m_Alpha));
 }
 
-Color const& Sphere::getColor() const {
+const TColor& TSphere::getColor() const {
 
 	return m_Color;
 }
 
-vec3 Sphere::getPos() const{
+vec3 TSphere::getPos() const{
 	return m_Position;
 }
 
-Color Sphere::Specular(const vec3& a_IntersectionPoint, const vec3& a_LampPos, const Ray& a_Ray)
+TColor TSphere::Specular(const vec3& a_IntersectionPoint, const vec3& a_LampPos, const TRay& a_Ray)
 {
 	//Add materials later
 	float specular = 0.2f;
@@ -168,37 +169,37 @@ Color Sphere::Specular(const vec3& a_IntersectionPoint, const vec3& a_LampPos, c
 	//Calculating the difference of h and normal
 	float L = specular * pow(std::max(normal.dot(h), 0.f),100);
 
-	return Color(100 * L, 100 * L, 100 * L);
+	return TColor(100 * L, 100 * L, 100 * L);
 }
 
-vec3 Sphere::getNormal(const vec3& a_IntersectionPoint) const
+vec3 TSphere::getNormal(const vec3& a_IntersectionPoint) const
 {
 	return vec3(a_IntersectionPoint - m_Position);
 }
 
-float const& Sphere::getReflectiveness() const
+float const& TSphere::getReflectiveness() const
 {
 	return m_Reflectiveness;
 }
 
-int Sphere::getType() const
+int TSphere::getType() const
 {
 	return t_Sphere;
 }
 
-float Sphere::getRefractionIndex() const
+float TSphere::getRefractionIndex() const
 {
 	return m_RefractionIndex;
 }
 
-float Sphere::getRadius() const
+float TSphere::getRadius() const
 {
 	return this->m_Radius;
 }
 
-BoundingBox Sphere::getBoundBox() const
+TBoundingBox TSphere::getBoundBox() const
 {
-	return BoundingBox(vec3(this->m_Position.m_X - this->m_Radius, this->m_Position.m_Y - this->m_Radius, this->m_Position.m_Z - this->m_Radius), vec3(this->m_Position.m_X + this->m_Radius, this->m_Position.m_Y + this->m_Radius, this->m_Position.m_Z + this->m_Radius));
+	return TBoundingBox(vec3(this->m_Position.m_X - this->m_Radius, this->m_Position.m_Y - this->m_Radius, this->m_Position.m_Z - this->m_Radius), vec3(this->m_Position.m_X + this->m_Radius, this->m_Position.m_Y + this->m_Radius, this->m_Position.m_Z + this->m_Radius));
 }
 
 

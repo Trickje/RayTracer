@@ -1,22 +1,22 @@
 #include "Ray.h"
-Ray::Ray()
+TRay::TRay()
 {
 }
 
 
-Ray::~Ray()
+TRay::~TRay()
 {
 	if (m_SecondaryRay != NULL) {
 		delete m_SecondaryRay;
 	}
 }
 
-void Ray::setPlane(Plane * a_Plane)
+void TRay::setPlane(TPlane * a_Plane)
 {
 	m_Plane = a_Plane;
 }
 
-void Ray::Trace(const std::vector<Lamp*> a_Lamps)
+void TRay::Trace(const std::vector<TLamp*> a_Lamps)
 {
 		if (this->m_CollisionInfo.m_ClosestObject != NULL) {
 			float l_PlaneDistance = 999.f;
@@ -50,7 +50,7 @@ void Ray::Trace(const std::vector<Lamp*> a_Lamps)
 				this->m_ColorInfo.m_FinalColor = this->m_ColorInfo.m_DiffuseColor;
 			}
 			else {
-				m_ColorInfo.m_FinalColor = Color::Black();
+				m_ColorInfo.m_FinalColor = TColor::Black();
 			}
 		}
 		if (m_SecondaryRay != NULL) {
@@ -59,11 +59,11 @@ void Ray::Trace(const std::vector<Lamp*> a_Lamps)
 		}
 }
 
-void Ray::Trace(const std::vector<Object*>& a_Objects, const std::vector<Lamp*> a_Lamps)
+void TRay::Trace(const std::vector<TObject*>& a_Objects, const std::vector<TLamp*> a_Lamps)
 {
 	this->Collides(a_Objects);
 	if (this->m_CollisionInfo.m_ClosestObject == 0) {
-		this->m_ColorInfo.m_FinalColor = Color::Black();
+		this->m_ColorInfo.m_FinalColor = TColor::Black();
 	}
 	else {
 		if (this->m_CollisionInfo.m_ClosestObject->getType() == t_Plane) {
@@ -92,9 +92,9 @@ void Ray::Trace(const std::vector<Object*>& a_Objects, const std::vector<Lamp*> 
 	}
 }
 
-bool Ray::Collides(const std::vector<Object*> &a_Objects)
+bool TRay::Collides(const std::vector<TObject*> &a_Objects)
 {
-	std::vector<Object*> tempObjects = a_Objects;
+	std::vector<TObject*> tempObjects = a_Objects;
 	tempObjects.push_back(m_Plane);
 	float dist = 100.f;
 	for (int o = 0; o < tempObjects.size(); o++) {
@@ -118,9 +118,9 @@ bool Ray::Collides(const std::vector<Object*> &a_Objects)
 	else { return false; }
 }
 
-bool Ray::Diffuse(const std::vector<Lamp*> &a_Lamps)
+bool TRay::Diffuse(const std::vector<TLamp*> &a_Lamps)
 {
-	Color objectColor;
+	TColor objectColor;
 	objectColor = this->m_CollisionInfo.m_ClosestObject->getColor();
 	if (this->m_CollisionInfo.m_ClosestObject->getType() == t_Plane) {
 		//Plane
@@ -143,28 +143,28 @@ bool Ray::Diffuse(const std::vector<Lamp*> &a_Lamps)
 	//Left side of the 2x2
 	if (zCol < (tileSize / 2.f)) {
 		//Closest side of the 2x2
-		objectColor = Color(100.f, 0.f, 0.f);
+		objectColor = TColor(100.f, 0.f, 0.f);
 	}
 	else {
 		//Back side of the 2x2
-		objectColor = Color(100.f, 100.f, 100.f);
+		objectColor = TColor(100.f, 100.f, 100.f);
 	}
 }
 else {
 	//Right side of the 2x2
 	if (zCol < (tileSize / 2.f)) {
 		//Closest side of the 2x2
-		objectColor = Color(100.f, 100.f, 100.f);
+		objectColor = TColor(100.f, 100.f, 100.f);
 	}
 	else {
 		//Back side of the 2x2
-		objectColor = Color(100.f, 0.f, 0.f);
+		objectColor = TColor(100.f, 0.f, 0.f);
 	}
 }
 	}
 		for (int l = 0; l < a_Lamps.size(); l++) {
 			objectColor.Inverse();
-			Color TempColor = (a_Lamps[l]->m_Color * this->m_ColorInfo.m_LightLevel) - objectColor;
+			TColor TempColor = (a_Lamps[l]->m_Color * this->m_ColorInfo.m_LightLevel) - objectColor;
 			TempColor.KeepItReal();
 			vec3 l_Normal = this->m_CollisionInfo.m_ClosestObject->getNormal(this->m_CollisionInfo.m_IntersectionPoint);
 			l_Normal.normalize();
@@ -182,7 +182,7 @@ else {
 		return true;
 }
 
-bool Ray::Specular(const std::vector<Lamp*> &a_Lamps)
+bool TRay::Specular(const std::vector<TLamp*> &a_Lamps)
 {
 	if (this->m_CollisionInfo.m_ClosestObject != 0) {
 		for (int l = 0; l < a_Lamps.size(); l++) {
@@ -192,7 +192,7 @@ bool Ray::Specular(const std::vector<Lamp*> &a_Lamps)
 	return false;
 }
 
-bool Ray::Reflection(const std::vector<Object*>& a_Objects, const std::vector<Lamp*> &a_Lamps)
+bool TRay::Reflection(const std::vector<TObject*>& a_Objects, const std::vector<TLamp*> &a_Lamps)
 {
 	if (this->m_CollisionInfo.m_ClosestObject->getReflectiveness() <= 0.f) {
 		return false;
@@ -212,7 +212,7 @@ bool Ray::Reflection(const std::vector<Object*>& a_Objects, const std::vector<La
 	return false;
 }
 
-bool Ray::Refraction(const std::vector<Object*>& a_Objects, const std::vector<Lamp*> &a_Lamps)
+bool TRay::Refraction(const std::vector<TObject*>& a_Objects, const std::vector<TLamp*> &a_Lamps)
 {
 	if (this->m_RayInfo.m_Reflecting < MAXREFLECTIONS) {
 		this->m_RayInfo.m_Reflecting++;
@@ -225,12 +225,12 @@ bool Ray::Refraction(const std::vector<Object*>& a_Objects, const std::vector<La
 			float l_angle1 = acos((this->m_RayInfo.m_Direction).dot(normal1.normalize()));
 			float l_angle2 = 3.14159265359f * -0.5f
 				- ((l_angle1 * l_n1) / l_n2);
-			Ray l_RefractedRay1 = Ray(this->m_CollisionInfo.m_IntersectionPoint + (normal1.normalize() * (cos(l_angle2))).normalize() * 0.1f, (normal1.normalize() * (cos(l_angle2))).normalize());
+			TRay l_RefractedRay1 = TRay(this->m_CollisionInfo.m_IntersectionPoint + (normal1.normalize() * (cos(l_angle2))).normalize() * 0.1f, (normal1.normalize() * (cos(l_angle2))).normalize());
 			l_RefractedRay1.setPlane(m_Plane);
 			l_RefractedRay1.m_RayInfo.m_N1 = l_n2;
 			l_RefractedRay1.m_RayInfo.m_Reflecting = this->m_RayInfo.m_Reflecting;
 			l_RefractedRay1.Trace(a_Objects, a_Lamps);
-				if (l_RefractedRay1.m_ColorInfo.m_FinalColor == Color::Black()) {
+				if (l_RefractedRay1.m_ColorInfo.m_FinalColor == TColor::Black()) {
 					return false;
 				}
 				if(!l_RefractedRay1.Refraction(a_Objects, a_Lamps)){
@@ -247,7 +247,7 @@ bool Ray::Refraction(const std::vector<Object*>& a_Objects, const std::vector<La
 	return false;
 }
 
-bool Ray::anotherRay(BVHAcceleration& a_BVH, const std::vector<Lamp*> a_Lamps)
+bool TRay::anotherRay(TBVHAcceleration& a_BVH, const std::vector<TLamp*> a_Lamps)
 {
 	if(this->m_CollisionInfo.m_ClosestObject == NULL){
 		return false;
@@ -264,7 +264,7 @@ bool Ray::anotherRay(BVHAcceleration& a_BVH, const std::vector<Lamp*> a_Lamps)
 					float l_angle1 = acos((this->m_RayInfo.m_Direction).dot(normal1.normalize()));
 					float l_angle2 = 3.14159265359f * -0.5f
 						- ((l_angle1 * l_n1) / l_n2);
-					m_SecondaryRay = new Ray();
+					m_SecondaryRay = new TRay();
 					m_SecondaryRay->m_RayInfo.m_Origin = this->m_CollisionInfo.m_IntersectionPoint + (normal1.normalize() * (cos(l_angle2))).normalize() * 0.1f;
 					m_SecondaryRay->m_RayInfo.m_Direction = (normal1.normalize() * (cos(l_angle2))).normalize();
 					m_SecondaryRay->setPlane(m_Plane);
@@ -327,7 +327,7 @@ bool Ray::anotherRay(BVHAcceleration& a_BVH, const std::vector<Lamp*> a_Lamps)
 		}
 		if (this->m_CollisionInfo.m_ClosestObject->getReflectiveness() > 0.f) {
 			if (this->m_RayInfo.m_Reflecting < MAXREFLECTIONS) {
-				this->m_SecondaryRay = new Ray();
+				this->m_SecondaryRay = new TRay();
 				m_SecondaryRay->m_RayInfo.m_Reflecting = this->m_RayInfo.m_Reflecting;
 				this->m_SecondaryRay->setPlane(m_Plane);
 				vec3 surfaceNormal = this->m_CollisionInfo.m_ClosestObject->getNormal(this->m_CollisionInfo.m_IntersectionPoint).normalize();
@@ -349,12 +349,12 @@ bool Ray::anotherRay(BVHAcceleration& a_BVH, const std::vector<Lamp*> a_Lamps)
 	return false;
 }
 
-sf::Color Ray::getSFColor()
+sf::Color TRay::getSFColor()
 {
 	return this->m_ColorInfo.m_FinalColor.toSF();
 }
 
-Ray::Ray(vec3 a_Origin, vec3 a_Direction)
+TRay::TRay(vec3 a_Origin, vec3 a_Direction)
 {
 	this->m_RayInfo.m_Origin = a_Origin;
 	this->m_RayInfo.m_Direction = a_Direction;

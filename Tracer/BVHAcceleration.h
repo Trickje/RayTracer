@@ -3,20 +3,20 @@
 #include "Ray.h"
 #include "Shapes.h"
 
-class Object;
-class BVHNode;
-class Ray;
+class TObject;
+class TBVHNode;
+class TRay;
 
-class BVHAcceleration
+class TBVHAcceleration
 {
 public:
-	BVHAcceleration();
-	~BVHAcceleration();
-	void createTree(const std::vector<Object*>& a_Objects);
-	bool Intersect(Ray& a_Ray);
+	TBVHAcceleration();
+	~TBVHAcceleration();
+	void createTree(const std::vector<TObject*>& a_Objects);
+	bool Intersect(TRay& a_Ray);
 
 private:
-	BVHNode* m_Scene = NULL;
+	TBVHNode* m_Scene = NULL;
 	
 };
 

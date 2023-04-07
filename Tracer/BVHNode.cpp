@@ -2,12 +2,12 @@
 #include <algorithm>
 
 
-BVHNode::BVHNode()
+TBVHNode::TBVHNode()
 {
 }
 
 
-BVHNode::~BVHNode()
+TBVHNode::~TBVHNode()
 {
 
 	if (m_BBox != NULL) {
@@ -29,12 +29,12 @@ BVHNode::~BVHNode()
 	}
 }
 
-BVHNode::BVHNode(vec3 a_Min, vec3 a_Max) 
+TBVHNode::TBVHNode(vec3 a_Min, vec3 a_Max) 
 {
-	m_BBox = new BoundingBox(a_Min, a_Max);
+	m_BBox = new TBoundingBox(a_Min, a_Max);
 }
 
-BVHNode::BVHNode(const std::vector<Object*>& a_Objects)
+TBVHNode::TBVHNode(const std::vector<TObject*>& a_Objects)
 {
 	if (a_Objects.size() < 3) {
 		m_IsLeaf = true;
@@ -56,7 +56,7 @@ BVHNode::BVHNode(const std::vector<Object*>& a_Objects)
 			l_Max.m_Z = std::max(l_Max.m_Z, obj_Max.m_Z);
 		}
 		if (l_Min != l_Max) {
-			m_BBox = new BoundingBox(l_Min, l_Max);
+			m_BBox = new TBoundingBox(l_Min, l_Max);
 		}
 	}
 	else {
@@ -166,7 +166,7 @@ BVHNode::BVHNode(const std::vector<Object*>& a_Objects)
 	}
 }
 
-bool BVHNode::Intersect(Ray & a_Ray)
+bool TBVHNode::Intersect(TRay& a_Ray)
 {
 	if (m_BBox == NULL) {
 		return false;
@@ -224,7 +224,7 @@ bool BVHNode::Intersect(Ray & a_Ray)
 					bool hitChild = false; 
 					float l_LeftDistance = -1.f;
 					float l_RightDistance = -1.f;
-					Object* l_LeftObj = NULL;
+					TObject* l_LeftObj = NULL;
 					if (m_LeftChild->Intersect(a_Ray)) {
 						l_LeftDistance = a_Ray.m_CollisionInfo.m_Intersection;
 						l_LeftObj = a_Ray.m_CollisionInfo.m_ClosestObject;
@@ -258,7 +258,7 @@ bool BVHNode::Intersect(Ray & a_Ray)
 	return false;
 }
 
-bool BVHNode::Branch(const std::vector<Object*>& a_Objects)
+bool TBVHNode::Branch(const std::vector<TObject*>& a_Objects)
 {
 	if (!m_IsLeaf) {
 		if (!a_Objects.empty()) {
@@ -277,7 +277,7 @@ bool BVHNode::Branch(const std::vector<Object*>& a_Objects)
 				l_Max.m_Z = std::max(l_Max.m_Z, obj_Max.m_Z);
 			}
 			if (l_Min != l_Max) {
-				m_BBox = new BoundingBox(l_Min, l_Max);
+				m_BBox = new TBoundingBox(l_Min, l_Max);
 			}
 		}
 		else {
@@ -288,8 +288,8 @@ bool BVHNode::Branch(const std::vector<Object*>& a_Objects)
 		float l_XAxis = m_BBox->getMax().m_X - m_BBox->getMin().m_X;
 		float l_YAxis = m_BBox->getMax().m_Y - m_BBox->getMin().m_Y;
 		float l_ZAxis = m_BBox->getMax().m_Z - m_BBox->getMin().m_Z;
-		std::vector<Object*> l_LeftObjects;
-		std::vector<Object*> l_RightObjects;
+		std::vector<TObject*> l_LeftObjects;
+		std::vector<TObject*> l_RightObjects;
 		l_LeftObjects.reserve(a_Objects.size());
 		l_RightObjects.reserve(a_Objects.size());
 		if (l_XAxis < l_YAxis) {
@@ -380,10 +380,10 @@ bool BVHNode::Branch(const std::vector<Object*>& a_Objects)
 		//The Objects have been divided in either the right of left side
 		//Now create the child nodes
 		if (!l_LeftObjects.empty()) {
-			m_LeftChild = new BVHNode(l_LeftObjects);
+			m_LeftChild = new TBVHNode(l_LeftObjects);
 		}
 		if (!l_RightObjects.empty()) {
-			m_RightChild = new BVHNode(l_RightObjects);
+			m_RightChild = new TBVHNode(l_RightObjects);
 		}
 		if (m_LeftChild == NULL && m_RightChild == NULL) {
 			printf("BIGGGG YIKES!!!!!!!!!!!!!!!!!!!!!!!!!!\n\n\n\n\n");

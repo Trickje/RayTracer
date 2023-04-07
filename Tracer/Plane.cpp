@@ -1,39 +1,43 @@
 #include "Shapes.h"
 #include <iostream>
-Plane::Plane() {
+TPlane::TPlane() {
 
 }
 
-Plane::~Plane() {
+TPlane::~TPlane() {
 
 }
-Plane::Plane(const vec3& a_Position, const vec3&  a_Up, const Color& a_Color) {
+
+TPlane::TPlane(const vec3& a_Position, const vec3&  a_Up, const TColor& a_Color) {
 	m_Position = a_Position;
 	m_Up = a_Up;
 	m_Color = a_Color;
 }
-Plane::Plane(const vec3& a_Position, const vec3& a_Up, const Color& a_Color, const float& a_Reflectiveness)
+
+TPlane::TPlane(const vec3& a_Position, const vec3& a_Up, const TColor& a_Color, const float& a_Reflectiveness)
 {
 	m_Position = a_Position;
 	m_Up = a_Up;
 	m_Color = a_Color;
 	m_Reflectiveness = a_Reflectiveness;
 }
-bool Plane::intersect(const Ray& a_Ray) {
+
+bool TPlane::intersect(const TRay& a_Ray) {
 	if (a_Ray.m_RayInfo.m_Reflecting < 3) {
 		return true;
 	}
 	return false;
 }
-Color const& Plane::getColor() const
+
+const TColor& TPlane::getColor() const
 {
 	return m_Color;
 }
-sf::Color Plane::getSFColor() const
+sf::Color TPlane::getSFColor() const
 {
 	return m_Color.toSF();
 }
-bool Plane::Collides(const vec3& a_Origin, const vec3& a_Direction, float & a_IntersectionPoint)
+bool TPlane::Collides(const vec3& a_Origin, const vec3& a_Direction, float & a_IntersectionPoint)
 {
 	float dot = -m_Up.dot(a_Direction);
 	vec3 w = a_Origin - m_Position;
@@ -46,11 +50,13 @@ bool Plane::Collides(const vec3& a_Origin, const vec3& a_Direction, float & a_In
 	}
 	return false;
 }
-vec3 Plane::getPos() const
+
+vec3 TPlane::getPos() const
 {
 	return m_Position;
 }
-Color Plane::Specular(const vec3& a_IntersectionPoint, const vec3& a_LampPos, const Ray& a_Ray)
+
+TColor TPlane::Specular(const vec3& a_IntersectionPoint, const vec3& a_LampPos, const TRay& a_Ray)
 {
 	//Got this from https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model
 	//Add materials later
@@ -64,24 +70,28 @@ Color Plane::Specular(const vec3& a_IntersectionPoint, const vec3& a_LampPos, co
 	//Calculating the difference of h and normal
 	float L = specular * pow(std::max(normal.dot(h), 0.f), 100);
 
-	return Color(100 * L, 100 * L, 100 * L);
+	return TColor(100 * L, 100 * L, 100 * L);
 }
-vec3 Plane::getNormal(const vec3& a_IntersectionPoint) const
+
+vec3 TPlane::getNormal(const vec3& a_IntersectionPoint) const
 {
 	a_IntersectionPoint;
 	return m_Up;
 }
-float const& Plane::getReflectiveness() const
+
+float const& TPlane::getReflectiveness() const
 {
 	return m_Reflectiveness;
 }
-int Plane::getType() const
+
+int TPlane::getType() const
 {
 	return t_Plane;
 }
-BoundingBox Plane::getBoundBox() const
+
+TBoundingBox TPlane::getBoundBox() const
 {
-	return BoundingBox(vec3(0.f, 0.f, 0.f), vec3(0.f, 0.f, 0.f));
+	return TBoundingBox(vec3(0.f, 0.f, 0.f), vec3(0.f, 0.f, 0.f));
 }
 
 

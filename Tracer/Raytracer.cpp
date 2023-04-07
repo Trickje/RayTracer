@@ -7,6 +7,8 @@
 #include "Raytracer.h"
 static const float PI = 3.1415927410125732421875f; //Wth?
 
+#define SCREENWIDTH 1280
+#define SCREENHEIGHT 720
 //ScreenDimensions: x and y
 static const vec2 screenDimensions = vec2(1280.f, 720.f);
 //Do you want to use the BVH acceleration method?
@@ -26,8 +28,8 @@ static const int testFrames = 20 + 1; //What the heck?
 
 int main()
 {
-	sf::RenderWindow m_Window(sf::VideoMode(static_cast<unsigned int>(screenDimensions.m_X), static_cast<unsigned int>(screenDimensions.m_Y)), "Raytracer");
-	RayTracer tracer(m_Window);
+	sf::RenderWindow m_Window(sf::VideoMode(SCREENWIDTH, SCREENHEIGHT), "Raytracer");
+	TRayTracer tracer(m_Window);
 	if(useBVH)
 	printf("Using BVH\n");
 	if (!useBVH)
@@ -58,16 +60,16 @@ int main()
 	
 }
 
-RayTracer::RayTracer(sf::RenderWindow& a_Window) : m_Window(a_Window)
+TRayTracer::TRayTracer(sf::RenderWindow& a_Window) : m_Window(a_Window)
 {
 	
 }
 
-RayTracer::~RayTracer()
+TRayTracer::~TRayTracer()
 {
 }
 
-void RayTracer::Initialize()
+void TRayTracer::Initialize()
 {
 	//m_Objects.clear();
 	//m_Objects.reserve(0);
@@ -96,34 +98,34 @@ void RayTracer::Initialize()
 	if(!timing)
 	printf("First image displayed\n");
 	//Shape making
-	m_Plane = new Plane(vec3(0.01f, -1.f, 1.f), vec3(0.f, 1.f, 0.f), Color::Black());
-	m_Objects.push_back(new Sphere(vec3(0.f, 1.5f, 0.f), 1.5f, 10));
-	m_Objects.push_back(new Cube(vec3(0.f, 4.f, 0.f), vec3(0.5f, 0.6f, 0.2f), vec3(0.3f, 0.3f, 0.3f), 10));
+	m_Plane = new TPlane(vec3(0.01f, -1.f, 1.f), vec3(0.f, 1.f, 0.f), TColor::Black());
+	m_Objects.push_back(new TSphere(vec3(0.f, 1.5f, 0.f), 1.5f, 10));
+	m_Objects.push_back(new TCube(vec3(0.f, 4.f, 0.f), vec3(0.5f, 0.6f, 0.2f), vec3(0.3f, 0.3f, 0.3f), 10));
 	//AddObjects(t_Sphere, (objects / 2));
 	//AddObjects(t_Cube, objects - (objects / 2));
 	AddObjects(t_Cube, objects);
 
 	//Lamp making
-	m_Lamps.push_back(new Lamp(vec3(0.f, 5.f, 0.f), Color::White()));
+	m_Lamps.push_back(new TLamp(vec3(0.f, 5.f, 0.f), TColor::White()));
 	if(!timing)
 	printf("%i Objects created!\n", static_cast<int>(m_Objects.size()));
 	if (useBVH) {
-		m_BVH = new BVHAcceleration();
+		m_BVH = new TBVHAcceleration();
 		m_BVH->createTree(m_Objects);
 	}
 	if (looksAtFirstObject) {
 		if (m_Objects.size() > 0) {
-		m_Camera = Camera(mat4::lookat(m_Cam,
+		m_Camera = TCamera(mat4::lookat(m_Cam,
 			m_Objects[0]->getPos()
 			, vec3(0, 1, 0)), m_Cam);
 		}
 		else {
-			m_Camera = Camera(mat4::lookat(m_Cam,
+			m_Camera = TCamera(mat4::lookat(m_Cam,
 				vec3(0.f, 0.f, 0.f)
 				, vec3(0, 1, 0)), m_Cam);
 		}
 	}else {
-		m_Camera = Camera(mat4::lookat(m_Cam,
+		m_Camera = TCamera(mat4::lookat(m_Cam,
 			vec3(0.f, -2.f, 0.f)
 			, vec3(0, 1, 0)), m_Cam);
 	}
@@ -135,32 +137,32 @@ void RayTracer::Initialize()
 	m_ElapsedTime = sf::Time::Zero;
 }
 
-void RayTracer::AddObjects(const int & a_Type, const int & a_Amount)
+void TRayTracer::AddObjects(const int & a_Type, const int & a_Amount)
 {
 	for (int o = 0; o < a_Amount; o++) {
 		if (a_Type == t_Sphere) {
-			m_Objects.push_back(new Sphere());
+			m_Objects.push_back(new TSphere());
 		}
 		if (a_Type == t_Cube) {
-			m_Objects.push_back(new Cube());
+			m_Objects.push_back(new TCube());
 		}
 	}
 }
 
-void RayTracer::Render()
+void TRayTracer::Render()
 {
 	int y = 0;
 	m_ElapsedTime += m_Clock.restart();
 	m_ElapsedTime = sf::Time::Zero;
-	while (y < 720 && m_Window.isOpen()) {
+	while (y < SCREENHEIGHT && m_Window.isOpen()) {
 		//	std::cout <<"Loading: " << (std::to_string((y * 100) / 800)) << "%"  <<std::endl;
 
-		if (y >= 720) {
+		if (y >= SCREENHEIGHT) {
       break;
 		}
-		for (int x = 0; x < static_cast<int>(screenDimensions.m_X) - 1; x++) {
+		for (int x = 0; x < SCREENWIDTH; x++) {
 			////RAY TRACING PART
-			Ray currentRay = m_Camera.shootRay(x, y, screenDimensions);
+			TRay currentRay = m_Camera.shootRay(x, y, screenDimensions);
 			currentRay.setPlane(m_Plane);
 			if (useBVH) {
 				if (!m_Objects.empty()) {
@@ -202,7 +204,7 @@ void RayTracer::Render()
 	}
 
 }
-void RayTracer::Save()
+void TRayTracer::Save()
 {
 	m_ElapsedTime += m_Clock.restart();
 	//AUTOMATIC FILE SAVING

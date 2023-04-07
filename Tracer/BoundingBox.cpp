@@ -1,13 +1,14 @@
 #include "BoundingBox.h"
 #include <algorithm>
-BoundingBox::BoundingBox() {
+TBoundingBox::TBoundingBox() {
 
 }
 
-BoundingBox::~BoundingBox() {
+TBoundingBox::~TBoundingBox() {
 
 }
-BoundingBox::BoundingBox(const vec3& a_Min, const vec3& a_Max) {
+
+TBoundingBox::TBoundingBox(const vec3& a_Min, const vec3& a_Max) {
 
 	m_Min.m_X = std::min(a_Min.m_X, a_Max.m_X);
 	m_Min.m_Y = std::min(a_Min.m_Y, a_Max.m_Y);
@@ -18,7 +19,7 @@ BoundingBox::BoundingBox(const vec3& a_Min, const vec3& a_Max) {
 	m_Max.m_Z = std::max(a_Min.m_Z, a_Max.m_Z);
 }
 
-bool BoundingBox::Intersects(const vec3& a_Origin, const vec3& a_Direction, float& a_Distance) const{
+bool TBoundingBox::Intersects(const vec3& a_Origin, const vec3& a_Direction, float& a_Distance) const{
 	
 	volatile float t1X = -1.f;
 	volatile float t1Y = -1.f;
@@ -133,7 +134,7 @@ bool BoundingBox::Intersects(const vec3& a_Origin, const vec3& a_Direction, floa
 }
 
 
-bool BoundingBox::Collides(const BoundingBox& a_BBox) const{
+bool TBoundingBox::Collides(const TBoundingBox& a_BBox) const{
 	//Start with the X check
 	if (a_BBox.m_Min.m_X >= m_Min.m_X) {
 		if (a_BBox.m_Min.m_X <= m_Max.m_X) {
@@ -172,17 +173,17 @@ bool BoundingBox::Collides(const BoundingBox& a_BBox) const{
 	return false;
 }
 
-vec3 const& BoundingBox::getMin() const
+const vec3& TBoundingBox::getMin() const
 {
 	return  m_Min;
 }
 
-vec3 const& BoundingBox::getMax() const
+const vec3& TBoundingBox::getMax() const
 {
 	return m_Max;
 }
 
-void BoundingBox::Resize(const vec3 & a_Min, const vec3 & a_Max)
+void TBoundingBox::Resize(const vec3& a_Min, const vec3& a_Max)
 {
 	this->m_Min = a_Min;
 	this->m_Max = a_Max;

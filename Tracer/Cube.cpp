@@ -3,8 +3,10 @@
 #include <random>
 #include <time.h>
 #include <chrono>
+#include "Color.h"
+
 static const float PI = 3.1415927410125732421875f;
-Cube::Cube() {
+TCube::TCube() {
 	this->m_Position.m_Y = 1.f;
 	//Predefined bounds:
 	std::mt19937 generator(static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count()));
@@ -51,7 +53,7 @@ Cube::Cube() {
 	int randomB = dist(generator);
 	this->m_Reflectiveness = 0.f;
 	this->m_RefractionIndex = 0.f;
-	m_Color = Color(static_cast<float>(randomR), static_cast<float>(randomG), static_cast<float>(randomB));
+	m_Color = TColor(static_cast<float>(randomR), static_cast<float>(randomG), static_cast<float>(randomB));
 	m_Color.KeepItReal();
 
 	int randomRotateX = dist(generator);
@@ -135,17 +137,17 @@ Cube::Cube() {
 
 		l_Max += m_Position;
 		l_Min += m_Position;
-		m_BBox = new BoundingBox(l_Min, l_Max);
+		m_BBox = new TBoundingBox(l_Min, l_Max);
 	}
 }
 
-Cube::~Cube() {
+TCube::~TCube() {
 	if (m_BBox != NULL) {
 		delete m_BBox;
 	}
 }
 
-bool Cube::Collides(const vec3& a_Origin, const vec3& a_Direction, float& a_Intersection)
+bool TCube::Collides(const vec3& a_Origin, const vec3& a_Direction, float& a_Intersection)
 {
 	vec3 l_Origin = m_InverseTransformation * a_Origin;
 
@@ -275,22 +277,22 @@ bool Cube::Collides(const vec3& a_Origin, const vec3& a_Direction, float& a_Inte
 	}
 }
 
-Color const& Cube::getColor() const
+const TColor& TCube::getColor() const
 {
 	return m_Color;
 }
 
-sf::Color Cube::getSFColor() const
+sf::Color TCube::getSFColor() const
 {
 	return sf::Color(static_cast<sf::Uint8>(m_Color.m_R), static_cast<sf::Uint8>(m_Color.m_G), static_cast<sf::Uint8>(m_Color.m_B), static_cast<sf::Uint8>(m_Color.m_Alpha));
 }
 
-vec3 Cube::getPos() const
+vec3 TCube::getPos() const
 {
 	return m_Position;
 }
 
-Color Cube::Specular(const vec3 & a_IntersectionPoint, const vec3 & a_LampPos, const Ray & a_Ray)
+TColor TCube::Specular(const vec3 & a_IntersectionPoint, const vec3 & a_LampPos, const TRay & a_Ray)
 {
 	//Add materials later
 	float specular = 0.2f;
@@ -303,10 +305,10 @@ Color Cube::Specular(const vec3 & a_IntersectionPoint, const vec3 & a_LampPos, c
 	vec3 h = (v + l) / (v + l).length();
 	//Calculating the difference of h and normal
 	float L = specular * pow(std::max(normal.dot(h), 0.f), 100);
-	return Color(100.f * L, 100.f * L, 100.f * L);
+	return TColor(100.f * L, 100.f * L, 100.f * L);
 }
 
-vec3 Cube::getNormal(const vec3 & a_IntersectionPoint) const
+vec3 TCube::getNormal(const vec3 & a_IntersectionPoint) const
 {
 	vec3 l_IntersectionPoint = m_InverseTransformation * a_IntersectionPoint;
 	vec3 l_Min;
@@ -516,22 +518,22 @@ vec3 Cube::getNormal(const vec3 & a_IntersectionPoint) const
 	}*/
 }
 
-float const & Cube::getReflectiveness() const
+float const & TCube::getReflectiveness() const
 {
 	return m_Reflectiveness;
 }
 
-int Cube::getType() const
+int TCube::getType() const
 {
 	return t_Cube;
 }
 
-BoundingBox Cube::getBoundBox() const
+TBoundingBox TCube::getBoundBox() const
 {
 	return *m_BBox;
 }
 
-Cube::Cube(const vec3& a_Position, const vec3& a_Rotation, const vec3& a_Size, const Color& a_Color) {
+TCube::TCube(const vec3& a_Position, const vec3& a_Rotation, const vec3& a_Size, const TColor& a_Color) {
 	this->m_Size = a_Size;
 	this->m_Position = a_Position;
 	this->m_Color = a_Color;
@@ -610,11 +612,11 @@ Cube::Cube(const vec3& a_Position, const vec3& a_Rotation, const vec3& a_Size, c
 
 		l_Max += m_Position;
 		l_Min += m_Position;
-		m_BBox = new BoundingBox(l_Min, l_Max);
+		m_BBox = new TBoundingBox(l_Min, l_Max);
 	}
 }
 
-Cube::Cube(const vec3 & a_Position, const vec3 & a_Rotation, const vec3 & a_Size, int a_MaterialType)
+TCube::TCube(const vec3 & a_Position, const vec3 & a_Rotation, const vec3 & a_Size, int a_MaterialType)
 {
 	this->m_Position = a_Position;
 	this->m_Rotation = a_Rotation;
@@ -696,6 +698,6 @@ Cube::Cube(const vec3 & a_Position, const vec3 & a_Rotation, const vec3 & a_Size
 
 		l_Max += m_Position;
 		l_Min += m_Position;
-		m_BBox = new BoundingBox(l_Min, l_Max);
+		m_BBox = new TBoundingBox(l_Min, l_Max);
 	}
 }
